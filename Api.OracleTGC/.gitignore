@@ -1,0 +1,73 @@
+# =============================================================================
+# Arquivos de Configuração Sensíveis
+# =============================================================================
+.env
+.env.local
+.env.local.php
+.env.*.local
+.env.test.local
+/config/secrets/prod/prod.decrypt.private.php
+*.pem
+*.key
+
+# =============================================================================
+# Dependências e Pastas de Bibliotecas
+# =============================================================================
+/vendor/
+/composer.phar
+/doctum.phar
+
+# =============================================================================
+# Arquivos de Build, Compilação e Logs
+# =============================================================================
+/var/
+/public/bundles/
+/public/storage/log/
+*.log
+.phpunit.result.cache
+/phpunit.xml
+/.phpunit.cache/
+/var/cache/
+/var/log/
+
+# Doctum (documentação gerada)
+/docs/api/
+/var/cache/doctum/
+
+# =============================================================================
+# Configurações de IDE e Editor de Código (Local)
+# =============================================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# =============================================================================
+# Arquivos de Banco de Dados Locais
+# =============================================================================
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+/mysql_data/
+/data/*.sql
+
+# =============================================================================
+# Storage – fotos de cartas (não versionar; ignora toda a árvore)
+# =============================================================================
+/public/storage/cards/
+**/public/storage/cards/
+
+# =============================================================================
+# Outros (projeto)
+# =============================================================================
+/config/secrets/
+/phpstan.neon
+/phpstan-baseline.neon
+/phpstan.neon.dist
+/scripts/*

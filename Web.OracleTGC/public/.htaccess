@@ -1,0 +1,12 @@
+# SPA fallback: todas as rotas que não forem arquivo estático
+# devem servir index.html para o React Router funcionar ao dar F5.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  # Se o pedido não é para um arquivo que existe
+  RewriteCond %{REQUEST_FILENAME} !-f
+  # E não é para um diretório que existe
+  RewriteCond %{REQUEST_FILENAME} !-d
+  # Envia para index.html
+  RewriteRule . /index.html [L]
+</IfModule>

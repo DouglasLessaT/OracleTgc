@@ -1,0 +1,72 @@
+parameters:
+    jwt.secret_key: '%env(JWT_SECRET_KEY)%'
+    jwt.algorithm: 'HS256'
+    jwt.expiration_time: 3600
+    mailer.from: '%env(MAILER_FROM)%'
+    mailer.from_name: '%env(MAILER_FROM_NAME)%'
+    app.name: '%env(APP_NAME)%'
+    # SMTP para PHPMailer (Gmail, Outlook, Mailtrap, etc.)
+    smtp.host: '%env(SMTP_HOST)%'
+    smtp.port: '%env(int:SMTP_PORT)%'
+    smtp.user: '%env(SMTP_USER)%'
+    smtp.password: '%env(SMTP_PASSWORD)%'
+    smtp.encryption: '%env(SMTP_ENCRYPTION)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            $projectDir: '%kernel.project_dir%'
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    App\Service\:
+        resource: '../src/Service/'
+
+    App\Repositories\:
+        resource: '../src/Repositories/'
+
+    # PHPMailer via SMTP (envio robusto, menos spam)
+    App\Service\PhpMailerService:
+        arguments:
+            $host: '%smtp.host%'
+            $port: '%smtp.port%'
+            $user: '%smtp.user%'
+            $password: '%smtp.password%'
+            $encryption: '%smtp.encryption%'
+            $fromEmail: '%mailer.from%'
+            $fromName: '%mailer.from_name%'
+            $debug: '%kernel.debug%'
+
+    # Email verification (template HTML + PHPMailer)
+    App\Service\EmailVerificationService:
+        arguments:
+            $appName: '%app.name%'
+
+    # JWT Manager
+    App\Core\Infrastructure\Security\JWTManager:
+        arguments:
+            $secretKey: '%jwt.secret_key%'
+            $algorithm: '%jwt.algorithm%'
+            $expirationTime: '%jwt.expiration_time%'
+
+    # Database Setup Listener - Configura banco automaticamente
+    App\Core\Infrastructure\Database\DatabaseSetupListener:
+        tags:
+            - { name: kernel.event_subscriber }
+
+    # Integration layer - bridges para autenticação, filas e troca de dados entre sistemas
+    App\Core\Integration\Auth\AuthBridgeInterface: '@App\Core\Integration\Auth\AuthBridge'
+    App\Core\Integration\MessageQueue\QueueBridgeInterface: '@App\Core\Integration\MessageQueue\SyncQueueBridge'
+
+    # Middleware de pipeline (request ID, headers unificados)
+    App\Core\Infrastructure\Middleware\ApiPipelineSubscriber:
+        tags:
+            - { name: kernel.event_subscriber }
+

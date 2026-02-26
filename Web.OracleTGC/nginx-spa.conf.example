@@ -1,0 +1,36 @@
+# Exemplo de configuração Nginx para servir o frontend (SPA) em oracletgc.test
+# sem erro "No input file specified" / 404 ao dar F5 em /dashboard, /complete-profile, etc.
+#
+# No Homestead: o site oracletgc.test deve apontar para a pasta DIST do frontend.
+# 1) No Homestead.yaml, o map do site deve ser algo como:
+#    - map: oracletgc.test
+#      to: /home/vagrant/code/OracleTGC/Web.OracleTGC/dist
+# 2) O Nginx desse site DEVE ter o "try_files" abaixo (senão qualquer F5 em rota dá 404).
+#
+# Depois de alterar: vagrant reload --provision (ou recriar o site e provisionar).
+
+server {
+    listen 80;
+    listen 443 ssl;
+    server_name oracletgc.test;
+    # OBRIGATÓRIO: root deve ser a pasta dist do Web.OracleTGC (após npm run build)
+    root /home/vagrant/code/OracleTGC/Web.OracleTGC/dist;
+    index index.html index.php;
+
+    location / {
+        # Fallback SPA: se não for arquivo nem pasta, serve index.html (ou index.php)
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Se o seu ambiente já encaminha tudo para PHP, use em vez do try_files acima:
+    # try_files $uri $uri/ /index.php?$args;
+
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # ssl_certificate / path / ...
+    # ssl_certificate_key / path / ...
+}

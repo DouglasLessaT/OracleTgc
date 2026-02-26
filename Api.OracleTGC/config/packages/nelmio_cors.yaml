@@ -1,0 +1,19 @@
+nelmio_cors:
+    defaults:
+        origin_regex: true
+        # Origens explícitas (regex) para evitar CORS quando o front está em oracletgc.test ou localhost
+        allow_origin:
+            - 'http://oracletgc\.test'
+            - 'https://oracletgc\.test'
+            - 'http://localhost(:\d+)?'
+            - 'https://localhost(:\d+)?'
+            - '%env(CORS_ALLOW_ORIGIN)%'
+        allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
+        allow_headers: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With']
+        expose_headers: ['Link']
+        allow_credentials: true
+        max_age: 3600
+    paths:
+        '^/api/': ~
+        '^/': ~
+
